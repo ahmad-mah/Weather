@@ -1,0 +1,555 @@
+
+video Link:
+
+  https://drive.google.com/file/d/1IJeqzc8P6qShVCna4zXeXUcYk5RjiyP5/view?usp=sharing
+
+
+
+# Weather Feature Documentation
+
+## Overview
+The Weather feature is a core part of the WeatherMate application, providing users with real-time weather information based on their current location or a custom search query. The feature is built using **Clean Architecture**, ensuring separation of concerns, modularity, and testability. The weather data is fetched from the **WeatherAPI** service, and the application is designed to be responsive across mobile, tablet, and desktop platforms.
+
+---
+
+## Architecture
+The Weather feature follows the **Clean Architecture** pattern, which divides the application into three main layers:
+
+1. **Presentation Layer**: Handles the UI and user interactions.
+2. **Domain Layer**: Contains the business logic and use cases.
+3. **Data Layer**: Manages data sources and repositories.
+
+---
+
+## Project Structure
+The Weather feature is organized as follows:
+
+```
+lib/
+├── features/
+│   └── home/
+│       ├── data/
+│       │   ├── data_source/          # Remote data sources
+│       │   └── models/               # Data models
+│       ├── domain/
+│       │   ├── entity/               # Business entities
+│       │   ├── repository/           # Repository contracts
+│       │   └── usecases/             # Use cases
+│       └── presentation/
+│           ├── controller/           # State management (Cubits)
+│           ├── view/                 # UI components
+│           └── widgets/              # Reusable widgets
+└── main.dart
+```
+
+---
+
+## Components
+
+### 1. Data Layer
+The **Data Layer** is responsible for fetching and managing weather data from external APIs.
+
+#### **1.1 `WeatherRemoteDataSource`**
+- **Location**: `lib/features/home/data/data_source/weather_remote_data_source.dart`
+- **Purpose**: Fetches weather data from the **WeatherAPI**.
+- **Key Features**:
+  - Uses `ApiService` to make HTTP requests.
+  - Returns a `WeatherModel` containing weather data.
+
+```dart
+abstract class WeatherRemoteDataSource {
+  Future<WeatherModel> getWeather(dynamic position);
+}
+
+class WeatherRemoteDataSourceImpl implements WeatherRemoteDataSource {
+  final ApiService apiService;
+
+  WeatherRemoteDataSourceImpl(this.apiService);
+
+  @override
+  Future<WeatherModel> getWeather(dynamic position) async {
+    final response = await apiService.get(endpoint: 'forecast.json', q: '$position&days=7');
+    return WeatherModel.fromJson(response);
+  }
+}
+```
+
+#### **1.2 `WeatherModel`**
+- **Location**: `lib/features/home/data/models/weather_model/weather_model.dart`
+- **Purpose**: Represents the weather data fetched from the API.
+- **Key Features**:
+  - Contains fields like `location`, `current`, and `forecast`.
+  - Converts JSON data into a Dart object.
+
+```dart
+class WeatherModel extends WeatherEntity {
+  Location? location;
+  Current? current;
+  Forecast? forecast;
+
+  WeatherModel({this.location, this.current, this.forecast})
+      : super(
+          cityName: location!.name!,
+          temperature: current!.tempC!,
+          windSpeed: current.windMph!,
+          humidity: current.humidity!,
+          weatherCondition: current.condition!.text!,
+          weatherConditionIcon: 'https:${current.condition!.icon!}',
+          temperatureFeelsLike: current.feelslikeC!,
+          pressure: current.pressureIn!,
+          uv: current.uv!,
+          localTime: location.localtime!,
+          country: location.country!,
+          region: location.region!,
+          hourlyForecast: forecast!.forecastday![0].hour!
+              .where((e) => forecast.forecastday![0].hour!.indexOf(e) % 3 == 0)
+              .map(
+                (e) => HourlyForecast(
+                  time: e.time!.split(' ')[1],
+                  temperature: e.tempC!,
+                  iconUrl: 'https:${e.condition!.icon!}',
+                ),
+              )
+              .toList(),
+          weeklyForecast: forecast.forecastday!
+              .map(
+                (e) => DailyForecast(
+                  day: formatDayShort(e.date!),
+                  maxTemp: e.day!.maxtempC!,
+                  minTemp: e.day!.mintempC!,
+                  iconUrl: 'https:${e.day!.condition!.icon!}',
+                  weatherCondition: e.day!.condition!.text!,
+                ),
+              )
+              .toList(),
+        );
+
+  factory WeatherModel.fromJson(Map<String, dynamic> json) => WeatherModel(
+        location: json['location'] == null
+            ? null
+            : Location.fromJson(json['location'] as Map<String, dynamic>),
+        current: json['current'] == null
+            ? null
+            : Current.fromJson(json['current'] as Map<String, dynamic>),
+        forecast: json['forecast'] == null
+            ? null
+            : Forecast.fromJson(json['forecast'] as Map<String, dynamic>),
+      );
+}
+```
+
+#### **1.3 `WeatherRepositoryImpl`**
+- **Location**: `lib/features/home/data/repository_impl/weather_repository_impl.dart`
+- **Purpose**: Implements the `WeatherRepository` interface and handles errors.
+- **Key Features**:
+  - Uses `WeatherRemoteDataSource` to fetch data.
+  - Returns `Either<Failure, WeatherEntity>` for error handling.
+
+```dart
+class WeatherRepositoryImpl implements WeatherRepository {
+  final WeatherRemoteDataSource remoteDataSource;
+
+  WeatherRepositoryImpl(this.remoteDataSource);
+
+  @override
+  Future<Either<Failure, WeatherEntity>> getWeather(dynamic position) async {
+    try {
+      final weatherModel = await remoteDataSource.getWeather(position);
+      return Right(weatherModel);
+    } catch (e) {
+      if (e is DioException) {
+        return Left(ServerFailure.fromDioException(e));
+      }
+      return Left(ServerFailure(e.toString()));
+    }
+  }
+}
+```
+
+---
+
+### 2. Domain Layer
+The **Domain Layer** contains the business logic and use cases.
+
+#### **2.1 `WeatherEntity`**
+- **Location**: `lib/features/home/domain/entity/weather_entity.dart`
+- **Purpose**: Represents the core business entity for weather data.
+- **Key Features**:
+  - Contains fields like `cityName`, `temperature`, `windSpeed`, `humidity`, etc.
+  - Used across the application to represent weather data.
+
+```dart
+class WeatherEntity {
+  final String cityName;
+  final String country;
+  final String region;
+  final String weatherConditionIcon;
+  final double temperature;
+  final double windSpeed;
+  final num humidity;
+  final String weatherCondition;
+  final double temperatureFeelsLike;
+  final num pressure;
+  final num uv;
+  final String localTime;
+  final List<HourlyForecast> hourlyForecast;
+  final List<DailyForecast> weeklyForecast;
+
+  WeatherEntity({
+    required this.cityName,
+    required this.temperature,
+    required this.windSpeed,
+    required this.humidity,
+    required this.weatherCondition,
+    required this.weatherConditionIcon,
+    required this.temperatureFeelsLike,
+    required this.pressure,
+    required this.uv,
+    required this.localTime,
+    required this.country,
+    required this.region,
+    required this.hourlyForecast,
+    required this.weeklyForecast,
+  });
+}
+```
+
+#### **2.2 `GetWeatherUsecase`**
+- **Location**: `lib/features/home/domain/usecases/get_weather_usecase.dart`
+- **Purpose**: Executes the `getWeather` use case.
+- **Key Features**:
+  - Uses `WeatherRepository` to fetch weather data.
+  - Returns `Either<Failure, WeatherEntity>`.
+
+```dart
+class GetWeatherUsecase {
+  final WeatherRepository weatherRepository;
+
+  GetWeatherUsecase(this.weatherRepository);
+
+  Future<Either<Failure, WeatherEntity>> execute(dynamic position) {
+    return weatherRepository.getWeather(position);
+  }
+}
+```
+
+---
+
+### 3. Presentation Layer
+The **Presentation Layer** handles the UI and state management.
+
+#### **3.1 `WeatherCubit`**
+- **Location**: `lib/features/home/presentation/controller/weather/weather_cubit.dart`
+- **Purpose**: Manages the state of weather data.
+- **Key Features**:
+  - Emits `WeatherLoading`, `WeatherSuccess`, and `WeatherFailed` states.
+  - Uses `GetWeatherUsecase` to fetch weather data.
+
+```dart
+class WeatherCubit extends Cubit<WeatherState> {
+  WeatherCubit(this.getWeatherUsecase) : super(WeatherInitial());
+
+  final GetWeatherUsecase getWeatherUsecase;
+
+  void getWeather(dynamic position) async {
+    emit(WeatherLoading());
+    final result = await getWeatherUsecase.execute(position);
+    result.fold(
+      (failure) => emit(WeatherFailed(message: failure.message)),
+      (weather) => emit(WeatherSuccess(weather: weather)),
+    );
+  }
+}
+```
+
+#### **3.2 `LocationCubit`**
+- **Location**: `lib/features/home/presentation/controller/location/location_cubit.dart`
+- **Purpose**: Manages the state of the user's location.
+- **Key Features**:
+  - Emits `LocationLoading`, `LocationSuccess`, and `LocationFailed` states.
+  - Uses `LocationService` to fetch the current location.
+
+```dart
+class LocationCubit extends Cubit<LocationState> {
+  LocationCubit(this.locationService) : super(LocationInitial());
+
+  final LocationService locationService;
+
+  Future<void> fetchCurrentLocation() async {
+    emit(LocationLoading());
+    try {
+      final position = await locationService.getCurrentLocation();
+      emit(LocationSuccess(position));
+    } catch (e) {
+      emit(LocationFailed(e.toString()));
+    }
+  }
+}
+```
+
+#### **3.3 `WeatherProvider`**
+- **Location**: `lib/features/home/presentation/controller/weather/weather_provider.dart`
+- **Purpose**: Manages the active tab state (Today or This Week).
+- **Key Features**:
+  - Uses `ChangeNotifier` to notify listeners when the active tab changes.
+
+```dart
+class WeatherProvider extends ChangeNotifier {
+  String activeTab = AppStrings.today; // Default to 'Today'
+
+  void setActiveTab(String tab) {
+    activeTab = tab;
+    notifyListeners();
+  }
+}
+```
+
+---
+
+### 4. UI Components
+The **Presentation Layer** includes various UI components to display weather information.
+
+#### **4.1 `HomeView`**
+- **Location**: `lib/features/home/presentation/view/home_view.dart`
+- **Purpose**: The main view for displaying weather information.
+- **Key Features**:
+  - Uses `HomeAdaptiveLayout` to provide responsive layouts for mobile, tablet, and desktop.
+
+```dart
+class HomeView extends StatelessWidget {
+  const HomeView({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColors.primaryColor,
+      body: HomeAdaptiveLayout(
+        mobileLayout: (context) => const HomeMobileViewBody(),
+        tabletLayout: (context) => const HomeTabletViewBody(),
+        desktopLayout: (context) => const HomeDesktopViewBody(),
+      ),
+    );
+  }
+}
+```
+
+#### **4.2 `HomeAdaptiveLayout`**
+- **Location**: `lib/features/home/presentation/view/widgets/home_adaptive_layout.dart`
+- **Purpose**: Provides adaptive layouts based on screen size.
+- **Key Features**:
+  - Switches between mobile, tablet, and desktop layouts.
+
+```dart
+class HomeAdaptiveLayout extends StatelessWidget {
+  const HomeAdaptiveLayout({
+    super.key,
+    required this.mobileLayout,
+    required this.tabletLayout,
+    required this.desktopLayout,
+  });
+
+  final WidgetBuilder mobileLayout, tabletLayout, desktopLayout;
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(builder: (context, constraints) {
+      if (constraints.maxWidth < 750) {
+        return mobileLayout(context);
+      } else if (constraints.maxWidth < 1200) {
+        return tabletLayout(context);
+      } else {
+        return desktopLayout(context);
+      }
+    });
+  }
+}
+```
+
+#### **4.3 `SearchTextField`**
+- **Location**: `lib/features/home/presentation/view/widgets/search_text_field.dart`
+- **Purpose**: Allows users to search for weather information by city name.
+- **Key Features**:
+  - Uses `WeatherCubit` to fetch weather data based on the search query.
+
+```dart
+class SearchTextField extends StatefulWidget {
+  const SearchTextField({super.key});
+
+  @override
+  SearchTextFieldState createState() => SearchTextFieldState();
+}
+
+class SearchTextFieldState extends State<SearchTextField> {
+  bool _isTapped = false;
+  final TextEditingController _controller = TextEditingController();
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  void _handleTap() {
+    setState(() {
+      _isTapped = !_isTapped;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: StylishTextField(
+            controller: _controller,
+            isTapped: _isTapped,
+            onTap: () {
+              _handleTap();
+              if (_controller.text.isNotEmpty) {
+                context.read<WeatherCubit>().getWeather(_controller.text);
+              }
+              _controller.clear();
+            },
+            onSubmitted: (value) {
+              if (_controller.text.isNotEmpty) {
+                context.read<WeatherCubit>().getWeather(_controller.text);
+                _controller.clear();
+              }
+            },
+          ),
+        ),
+        const SizedBox(width: 8),
+        BlocConsumer<LocationCubit, LocationState>(
+          listener: (context, state) {
+            if (state is LocationFailed) {
+              showStyledSnackBar(context, state.message);
+            }
+            if (state is LocationSuccess) {
+              context.read<WeatherCubit>().getWeather(
+                  '${state.position.latitude},${state.position.longitude}');
+              _controller.clear();
+            }
+          },
+          builder: (context, state) {
+            if (state is LocationLoading) {
+              return const StyledCircularProgressIndicator();
+            }
+            return Container(
+              decoration: BoxDecoration(
+                color: Colors.blue[50],
+                borderRadius: BorderRadius.circular(16),
+              ),
+              child: IconButton(
+                icon: const Icon(
+                  Icons.location_on_rounded,
+                  color: AppColors.secondaryColor,
+                ),
+                onPressed: () async {
+                  await context.read<LocationCubit>().fetchCurrentLocation();
+                },
+              ),
+            );
+          },
+        ),
+      ],
+    );
+  }
+}
+```
+
+#### **4.4 `AirConditionsSection`**
+- **Location**: `lib/features/home/presentation/view/widgets/air_conditions_section.dart`
+- **Purpose**: Displays air condition details like real feel, wind, humidity, and UV index.
+- **Key Features**:
+  - Uses `WeatherCubit` to fetch and display weather data.
+
+```dart
+class AirConditionsSection extends StatelessWidget {
+  const AirConditionsSection({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocConsumer<WeatherCubit, WeatherState>(
+      listener: (context, state) {},
+      builder: (context, state) {
+        if (state is WeatherFailed) {
+          return StyledErrorWidget(message: state.message);
+        }
+
+        if (state is WeatherSuccess) {
+          return Container(
+            decoration: BoxDecoration(
+              color: AppColors.secondaryColor,
+              borderRadius: BorderRadius.circular(16.0),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(vertical: 32.0, horizontal: 32.0),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    AppStrings.airCondition,
+                    style: AppStyles.textStyleBoldl20(context),
+                  ),
+                  const SizedBox(height: 24.0),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: AirConditionItem(
+                            text: AppStrings.realFeel,
+                            icon: Icons.device_thermostat_rounded,
+                            value: '${state.weather.temperatureFeelsLike}°',
+                          ),
+                        ),
+                        Expanded(
+                          child: AirConditionItem(
+                            text: AppStrings.wind,
+                            value: '${state.weather.windSpeed} km/h',
+                            icon: Icons.air_rounded,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 8.0),
+                  Expanded(
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: AirConditionItem(
+                            text: AppStrings.humidity,
+                            value: '${state.weather.humidity}%',
+                            icon: Icons.water_drop_rounded,
+                          ),
+                        ),
+                        Expanded(
+                          child: AirConditionItem(
+                            text: AppStrings.uvIndex,
+                            value: '${state.weather.uv}',
+                            icon: Icons.brightness_5_rounded,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return const StyledCircularProgressIndicator();
+      },
+    );
+  }
+}
+```
+
+#### **4.5 `SevenDaysForecastSection`**
+- **Location**: `lib/features/home/presentation/view/widgets/seven_days_forecast_section.dart`
+- **Purpose**: Displays the 7-day weather forecast.
+- **Key Features**:
+  - Uses `WeatherCubit` to fetch and display weekly forecast data.
+
+```dart
