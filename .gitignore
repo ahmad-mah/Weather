@@ -46,3 +46,6 @@ app.*.map.json
 
 # opencode
 .opencode/
+
+# env
+.env
