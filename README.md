@@ -4,16 +4,278 @@ A Flutter weather app that shows current weather for any city — works offline,
 
 ---
 
-## How It Works (Non-Technical)
+## User Scenarios
 
-1. **Open the app** → A splash animation plays, then the home screen appears.
-2. **Cache check** → If you've searched before, your last result shows immediately — no loading, no waiting. The app doesn't even ask the internet.
-3. **First time / no cache** → The app asks for your location. If you allow it, weather for your city shows up. If you deny, it defaults to a fallback city.
-4. **Search a city** → Type a city name and tap search. A shimmer placeholder appears while loading, then the weather data slides in.
-5. **Offline?** → If you search without internet, a red snackbar pops up saying "No internet connection" — nothing else changes.
-6. **Fresh data when online** → Every successful search saves the result to local storage. Next time you open the app, that cached data is what you see first — the app upgrades it later if you search again online.
+### 👋 First Launch (No Cache, No History)
+
+```
+  [Open app]
+       │
+       ▼
+  ┌─────────────────────┐
+  │  Splash animation   │
+  │  plays (1 second)   │
+  └──────────┬──────────┘
+             │
+             ▼
+  ┌─────────────────────┐
+  │  Home screen loads  │
+  │  — empty, no data   │
+  └──────────┬──────────┘
+             │
+             ▼
+  ┌─────────────────────┐
+  │  App checks cache   │
+  │  → nothing found    │
+  └──────────┬──────────┘
+             │
+             ▼
+  ┌──────────────────────────────────┐
+  │  App triggers location request   │
+  │                                  │
+  │  ┌──────────┐   ┌─────────────┐  │
+  │  │ ALLOW    │   │   DENY      │  │
+  │  └────┬─────┘   └──────┬──────┘  │
+  │       │                │         │
+  │       ▼                ▼         │
+  │  Weather for        Falls        │
+  │  your city          back to      │
+  │  appears            Egypt        │
+  └──────────────────────────────────┘
+             │
+             ▼
+  ┌─────────────────────┐
+  │  Skeleton shimmer   │
+  │  while loading...   │
+  └──────────┬──────────┘
+             │
+             ▼
+  ┌─────────────────────┐
+  │  Weather data       │
+  │  slides in — temp,  │
+  │  icon, condition,   │
+  │  details card       │
+  └─────────────────────┘
+```
 
 ---
+
+### 🔁 Returning User (Cache Exists)
+
+```
+  [Open app]
+       │
+       ▼
+  ┌─────────────────────┐
+  │  Splash animation   │
+  └──────────┬──────────┘
+             │
+             ▼
+  ┌────────────────────────────────────────────┐
+  │  App reads last saved weather from Hive    │
+  │  cache — this takes <10ms                  │
+  └──────────┬─────────────────────────────────┘
+             │
+             ▼
+  ┌────────────────────────────────────────────┐
+  │  Weather data appears INSTANTLY            │
+  │  — no loading, no shimmer, no API call     │
+  │                                            │
+  │  The app DOES NOT fetch from the internet  │
+  │  on startup. Only user search triggers it. │
+  └────────────────────────────────────────────┘
+```
+
+---
+
+### 🔍 User Searches for a City
+
+```
+  [User types "London" in search bar]
+       │
+       ▼
+  ┌─────────────────────┐
+  │  User taps search   │
+  │  icon or presses    │
+  │  enter on keyboard  │
+  └──────────┬──────────┘
+             │
+             ▼
+  ┌──────────────────────────────────────┐
+  │  Cubit checks internet connection    │
+  │                                      │
+  │  ┌─────────┐        ┌──────────┐     │
+  │  │ ONLINE  │        │ OFFLINE  │     │
+  │  └────┬────┘        └────┬─────┘     │
+  │       │                  │           │
+  │       ▼                  ▼           │
+  │  Shimmer              Red snackbar   │
+  │  replaces             "No internet   │
+  │  current UI           connection"    │
+  │       │              UI unchanged    │
+  │       ▼                             │
+  │  API call          ──►  DONE         │
+  │  to weatherapi                        │
+  │       │                              │
+  │       ▼                              │
+  │  New weather      Still shows        │
+  │  data appears     previous / empty   │
+  │  on screen        state              │
+  │       │                              │
+  │       ▼                              │
+  │  Result saved                         │
+  │  to Hive cache                        │
+  │  for next launch                      │
+  └──────────────────────────────────────┘
+```
+
+---
+
+### ❌ User Searches for a Non-Existent City
+
+```
+  [User types "asdfgh" in search bar]
+       │
+       ▼
+  ┌─────────────────────┐
+  │  Online check → OK  │
+  └──────────┬──────────┘
+             │
+             ▼
+  ┌─────────────────────┐
+  │  Shimmer appears    │
+  └──────────┬──────────┘
+             │
+             ▼
+  ┌──────────────────────────────────────────────┐
+  │  WeatherAPI returns:                          │
+  │  { "error": { "message": "No matching         │
+  │    location found."} }                        │
+  └──────────┬───────────────────────────────────┘
+             │
+             ▼
+  ┌──────────────────────────────────────────────┐
+  │  Error screen appears:                        │
+  │  ┌─────────────────────────────────┐          │
+  │  │  😞 Lottie animation            │          │
+  │  │  "No matching location found."  │          │
+  │  │  [Search bar at top]            │          │
+  │  │  [Try again]                    │          │
+  │  └─────────────────────────────────┘          │
+  └──────────────────────────────────────────────┘
+```
+
+---
+
+### 📡 User Goes Offline After Having Data
+
+```
+  [User has weather on screen → airplane mode]
+       │
+       ▼
+  ┌──────────────────────────────────────────────┐
+  │  Current weather stays on screen              │
+  │  — nothing changes                           │
+  └──────────────────────────────────────────────┘
+
+  [User searches for a different city]
+       │
+       ▼
+  ┌──────────────────────────────────────────────┐
+  │  Red snackbar slides in from bottom:          │
+  │  ┌──────────────────────────────────┐         │
+  │  │  No internet connection          │         │
+  │  └──────────────────────────────────┘         │
+  │                                               │
+  │  Screen still shows LAST city's weather       │
+  │  — nothing changes, search is ignored         │
+  └──────────────────────────────────────────────┘
+```
+
+---
+
+### 🔌 API Goes Down But Cache Exists
+
+```
+  [User opens app — cache loads instantly]
+       │
+       ▼
+  [User searches for "Cairo"]
+       │
+       ▼
+  ┌──────────────────────────────────────────────┐
+  │  Online check → ✅ OK                         │
+  └──────────────────┬───────────────────────────┘
+                     │
+                     ▼
+  ┌──────────────────────────────────────────────┐
+  │  API call → ❌ Timeout / 500 error            │
+  └──────────────────┬───────────────────────────┘
+                     │
+                     ▼
+  ┌──────────────────────────────────────────────┐
+  │  Repository finds stale cache                 │
+  │  → Returns cached data as SUCCESS             │
+  │                                               │
+  │  App SHOWS the old weather silently           │
+  │  No error message. No snackbar.               │
+  │  User never knows the API failed.             │
+  └──────────────────────────────────────────────┘
+```
+
+---
+
+### 📱 Responsive Adaptation
+
+```
+  [User rotates phone, or moves from phone to tablet]
+
+  ┌────── < 750px ──────┐
+  │     MOBILE LAYOUT    │
+  │  ┌────────────────┐  │
+  │  │ Search bar     │  │
+  │  ├────────────────┤  │
+  │  │  🌤 32°        │  │
+  │  │  Sunny         │  │
+  │  │  Cairo         │  │
+  │  ├────────────────┤  │
+  │  │  Feels like 28° │  │
+  │  │  Humidity 45%  │  │
+  │  │  Wind 12 km/h  │  │
+  │  └────────────────┘  │
+  └──────────────────────┘
+
+  ┌── 750 – 1200px ──────┐
+  │     TABLET LAYOUT     │
+  │  ┌──────────────────┐ │
+  │  │  🌤 32°  Sunny   │ │
+  │  │  Cairo           │ │
+  │  │  Feels like 28°  │ │
+  │  │  Humidity 45%    │ │
+  │  │  Wind 12 km/h    │ │
+  │  └──────────────────┘ │
+  └───────────────────────┘
+
+  ┌────── ≥ 1200px ───────────────┐
+  │       DESKTOP LAYOUT           │
+  │  ┌───────────────────────────┐ │
+  │  │ 🌤 32°  Sunny  Cairo      │ │
+  │  ├───────────────────────────┤ │
+  │  │ Feels like: 28°           │ │
+  │  │ Humidity:   45%           │ │
+  │  │ Wind:       12 km/h       │ │
+  │  │ UV Index:   5             │ │
+  │  │ Pressure:   1015 hPa      │ │
+  │  │ Visibility: 10 km         │ │
+  │  │ Dew Point:  15°           │ │
+  │  │ Cloud:      0%            │ │
+  │  └───────────────────────────┘ │
+  └────────────────────────────────┘
+```
+
+---
+
+## Requirements Checklist
 
 ## Requirements Checklist
 
