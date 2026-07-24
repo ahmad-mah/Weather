@@ -12,7 +12,7 @@ part 'weather_state.dart';
 
 class WeatherCubit extends Cubit<WeatherState> {
   WeatherCubit(this.getWeatherUsecase, this.internetService)
-      : super(WeatherInitial());
+    : super(WeatherInitial());
 
   final GetWeatherUsecase getWeatherUsecase;
   final InternetService internetService;
@@ -50,13 +50,10 @@ class WeatherCubit extends Cubit<WeatherState> {
     emit(WeatherLoading());
 
     final result = await getWeatherUsecase.execute(position);
-    result.fold(
-      (failure) {
-        _effectController.add(ShowFailureSnackbar(failure.message));
-        emit(WeatherFailed(message: failure.message));
-      },
-      (weather) => emit(WeatherSuccess(weather: weather)),
-    );
+    result.fold((failure) {
+      _effectController.add(ShowFailureSnackbar(failure.message));
+      emit(WeatherFailed(message: failure.message));
+    }, (weather) => emit(WeatherSuccess(weather: weather)));
   }
 
   @override

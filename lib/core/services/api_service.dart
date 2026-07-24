@@ -2,8 +2,8 @@ import 'package:dio/dio.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiService {
-  final Dio _dio;
   ApiService(this._dio);
+  final Dio _dio;
 
   Future<Map<String, dynamic>> get({
     required String endpoint,

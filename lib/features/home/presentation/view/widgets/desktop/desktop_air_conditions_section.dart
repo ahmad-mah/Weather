@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../../../core/extensions/theme_extensions.dart';
 import '../../../../../../core/constants/app_strings.dart';
+import '../../../../../../core/extensions/theme_extensions.dart';
 import '../../../../../../core/typography/app_styles.dart';
 import '../../../../domain/entity/air_condition_item_model.dart';
 import '../../../../domain/entity/weather_entity.dart';
@@ -15,7 +15,7 @@ class DesktopAirConditionsSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<AirConditionItemModel> items = [
+    final List<AirConditionItemModel> items = [
       AirConditionItemModel(
         text: AppStrings.realFeel,
         icon: Icons.device_thermostat_rounded,

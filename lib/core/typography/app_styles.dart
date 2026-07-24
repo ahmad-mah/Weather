@@ -36,17 +36,17 @@ abstract class AppStyles {
 }
 
 double getResponsiveFontSize(BuildContext context, {required double fontSize}) {
-  double scaleFactor = getScaleFactor(context);
-  double responsiveFontSize = fontSize * scaleFactor;
+  final double scaleFactor = getScaleFactor(context);
+  final double responsiveFontSize = fontSize * scaleFactor;
 
-  double lowerLimit = fontSize * .7;
-  double upperLimit = fontSize * .9;
+  final double lowerLimit = fontSize * .7;
+  final double upperLimit = fontSize * .9;
 
   return responsiveFontSize.clamp(lowerLimit, upperLimit);
 }
 
 double getScaleFactor(BuildContext context) {
-  double width = MediaQuery.sizeOf(context).width;
+  final double width = MediaQuery.sizeOf(context).width;
   if (width < 800) {
     return width / 500;
   } else if (width < 1100) {

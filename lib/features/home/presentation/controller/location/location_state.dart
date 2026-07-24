@@ -12,16 +12,16 @@ class LocationInitial extends LocationState {}
 class LocationLoading extends LocationState {}
 
 class LocationSuccess extends LocationState {
-  final Position position;
   const LocationSuccess(this.position);
+  final Position position;
 
   @override
   List<Object> get props => [position];
 }
 
 class LocationFailed extends LocationState {
-  final String message;
   const LocationFailed(this.message);
+  final String message;
 
   @override
   List<Object> get props => [message];

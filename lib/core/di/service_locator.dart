@@ -13,18 +13,22 @@ final getIt = GetIt.instance;
 
 void setupServiceLocator() {
   getIt
-    ..registerLazySingleton(() => Dio())
+    ..registerLazySingleton(Dio.new)
     ..registerLazySingleton(() => ApiService(getIt<Dio>()))
     ..registerLazySingleton(
-        () => WeatherRemoteDataSourceImpl(getIt<ApiService>()))
-    ..registerLazySingleton(() => WeatherLocalDataSource())
-    ..registerLazySingleton(() => WeatherRepositoryImpl(
-          getIt<WeatherRemoteDataSourceImpl>(),
-          getIt<WeatherLocalDataSource>(),
-          getIt<InternetService>(),
-        ))
-    ..registerLazySingleton(() => LocationService())
-    ..registerLazySingleton(() => InternetService())
+      () => WeatherRemoteDataSourceImpl(getIt<ApiService>()),
+    )
+    ..registerLazySingleton(WeatherLocalDataSource.new)
     ..registerLazySingleton(
-        () => GetWeatherUsecase(getIt<WeatherRepositoryImpl>()));
+      () => WeatherRepositoryImpl(
+        getIt<WeatherRemoteDataSourceImpl>(),
+        getIt<WeatherLocalDataSource>(),
+        getIt<InternetService>(),
+      ),
+    )
+    ..registerLazySingleton(LocationService.new)
+    ..registerLazySingleton(InternetService.new)
+    ..registerLazySingleton(
+      () => GetWeatherUsecase(getIt<WeatherRepositoryImpl>()),
+    );
 }

@@ -7,6 +7,6 @@ class ShowOfflineSnackbar extends WeatherEffect {
 }
 
 class ShowFailureSnackbar extends WeatherEffect {
-  final String message;
   const ShowFailureSnackbar(this.message);
+  final String message;
 }

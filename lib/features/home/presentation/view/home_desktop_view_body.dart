@@ -31,11 +31,16 @@ class HomeDesktopViewBody extends HookWidget {
                     vertical: 32.h,
                   ),
                   child: switch (state) {
-                    WeatherSuccess(weather: final w) => DesktopWeatherContent(weather: w),
-                    WeatherFailed(message: final msg) => WeatherFailedContent(msg),
+                    WeatherSuccess(weather: final w) => DesktopWeatherContent(
+                      weather: w,
+                    ),
+                    WeatherFailed(message: final msg) => WeatherFailedContent(
+                      msg,
+                    ),
                     _ => Skeletonizer(
-                      enabled: true,
-                      child: DesktopWeatherContent(weather: WeatherEntity.fake()),
+                      child: DesktopWeatherContent(
+                        weather: WeatherEntity.fake(),
+                      ),
                     ),
                   },
                 ),

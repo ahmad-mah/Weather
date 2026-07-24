@@ -7,9 +7,9 @@ import '../../../../../core/services/location_service.dart';
 part 'location_state.dart';
 
 class LocationCubit extends Cubit<LocationState> {
-  final LocationService locationService;
 
   LocationCubit(this.locationService) : super(LocationInitial());
+  final LocationService locationService;
 
   Future<void> fetchCurrentLocation() async {
     emit(LocationLoading());

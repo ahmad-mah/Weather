@@ -17,7 +17,6 @@ class TabletHeaderSection extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           _CityName(weather: weather),
           Column(
@@ -44,7 +43,9 @@ class _CityName extends StatelessWidget {
       child: Text(
         textAlign: TextAlign.start,
         weather.cityName,
-        style: AppStyles.textStyleBold55(context).copyWith(color: context.colors.onPrimary),
+        style: AppStyles.textStyleBold55(
+          context,
+        ).copyWith(color: context.colors.onPrimary),
       ),
     );
   }
@@ -62,7 +63,9 @@ class _TemperatureRow extends StatelessWidget {
       children: [
         Text(
           '${weather.temperature.toInt()}°',
-          style: AppStyles.textStyleBold70(context).copyWith(color: context.colors.onPrimary),
+          style: AppStyles.textStyleBold70(
+            context,
+          ).copyWith(color: context.colors.onPrimary),
         ),
         _WeatherIcon(iconUrl: weather.weatherConditionIcon),
       ],
@@ -102,12 +105,16 @@ class _WeatherCondition extends StatelessWidget {
       children: [
         Text(
           weather.weatherCondition,
-          style: AppStyles.textStyleBold30(context).copyWith(color: context.colors.onPrimary),
+          style: AppStyles.textStyleBold30(
+            context,
+          ).copyWith(color: context.colors.onPrimary),
         ),
         SizedBox(height: 4.h),
         Text(
           '${weather.formattedDay}, ${weather.formattedTime}',
-          style: AppStyles.textStyleBoldl20(context).copyWith(color: context.colors.onPrimary.withValues(alpha: 0.54)),
+          style: AppStyles.textStyleBoldl20(
+            context,
+          ).copyWith(color: context.colors.onPrimary.withValues(alpha: 0.54)),
         ),
       ],
     );

@@ -4,9 +4,7 @@ import 'package:flutter_spinkit/flutter_spinkit.dart';
 import '../extensions/theme_extensions.dart';
 
 class StyledLoading extends StatelessWidget {
-  const StyledLoading({
-    super.key,
-  });
+  const StyledLoading({super.key});
 
   @override
   Widget build(BuildContext context) {

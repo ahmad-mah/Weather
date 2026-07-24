@@ -12,15 +12,15 @@ import '../data_source/weather_local_data_source.dart';
 import '../data_source/weather_remote_data_source.dart';
 
 class WeatherRepositoryImpl implements WeatherRepository {
-  final WeatherRemoteDataSource remoteDataSource;
-  final WeatherLocalDataSource localDataSource;
-  final InternetService internetService;
 
   WeatherRepositoryImpl(
     this.remoteDataSource,
     this.localDataSource,
     this.internetService,
   );
+  final WeatherRemoteDataSource remoteDataSource;
+  final WeatherLocalDataSource localDataSource;
+  final InternetService internetService;
 
   @override
   Future<WeatherEntity?> getCachedWeather() {

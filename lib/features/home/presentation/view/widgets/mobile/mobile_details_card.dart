@@ -13,7 +13,7 @@ class MobileDetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
+      padding: const EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: LinearGradient(
@@ -27,12 +27,24 @@ class MobileDetailsCard extends StatelessWidget {
         spacing: 12,
         children: [
           _DetailsCardRow(
-            first: DetailsCardInfo(icon: Icons.water_drop, text: '${weather.humidity}%'),
-            second: DetailsCardInfo(icon: Icons.thermostat, text: '${weather.temperatureFeelsLike}°'),
+            first: DetailsCardInfo(
+              icon: Icons.water_drop,
+              text: '${weather.humidity}%',
+            ),
+            second: DetailsCardInfo(
+              icon: Icons.thermostat,
+              text: '${weather.temperatureFeelsLike}°',
+            ),
           ),
           _DetailsCardRow(
-            first: DetailsCardInfo(icon: Icons.air_rounded, text: '${weather.windSpeed} km/h'),
-            second: DetailsCardInfo(icon: Icons.compass_calibration_rounded, text: weather.windDir),
+            first: DetailsCardInfo(
+              icon: Icons.air_rounded,
+              text: '${weather.windSpeed} km/h',
+            ),
+            second: DetailsCardInfo(
+              icon: Icons.compass_calibration_rounded,
+              text: weather.windDir,
+            ),
           ),
         ],
       ),
@@ -41,10 +53,7 @@ class MobileDetailsCard extends StatelessWidget {
 }
 
 class _DetailsCardRow extends StatelessWidget {
-  const _DetailsCardRow({
-    required this.first,
-    required this.second,
-  });
+  const _DetailsCardRow({required this.first, required this.second});
 
   final DetailsCardInfo first;
   final DetailsCardInfo second;

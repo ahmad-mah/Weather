@@ -5,9 +5,7 @@ import '../extensions/theme_extensions.dart';
 import '../typography/app_styles.dart';
 
 class StyledErrorWidget extends StatelessWidget {
-  const StyledErrorWidget({
-    super.key, this.message,
-  });
+  const StyledErrorWidget({super.key, this.message});
   final String? message;
 
   @override
@@ -25,7 +23,7 @@ class StyledErrorWidget extends StatelessWidget {
                 width: 120,
                 height: 120,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Text(
                 message ?? 'No Data Available',
                 style: AppStyles.textStyleBoldl20(context),

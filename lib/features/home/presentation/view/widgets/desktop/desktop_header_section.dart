@@ -17,7 +17,6 @@ class DesktopHeaderSection extends StatelessWidget {
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
 
         children: [
           _CityName(weather: weather),

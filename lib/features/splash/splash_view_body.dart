@@ -11,13 +11,16 @@ class SplashViewBody extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Center(
-      child: Lottie.asset(AppLotties.splashLottie, onLoaded: (composition) {
-        Future.delayed(composition.duration, () async {
-          if (context.mounted) {
-            GoRouter.of(context).pushReplacement(AppRouter.kHome);
-          }
-        });
-      }),
+      child: Lottie.asset(
+        AppLotties.splashLottie,
+        onLoaded: (composition) {
+          Future.delayed(composition.duration, () async {
+            if (context.mounted) {
+              GoRouter.of(context).pushReplacement(AppRouter.kHome);
+            }
+          });
+        },
+      ),
     );
   }
 }

@@ -33,7 +33,6 @@ class HomeMobileViewBody extends HookWidget {
                 ),
                 WeatherFailed(message: final msg) => WeatherFailedContent(msg),
                 _ => Skeletonizer(
-                  enabled: true,
                   child: MobileWeatherContent(weather: WeatherEntity.fake()),
                 ),
               },

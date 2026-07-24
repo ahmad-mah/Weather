@@ -29,10 +29,13 @@ class HomeTabletViewBody extends HookWidget {
                   vertical: 16.h,
                 ),
                 child: switch (state) {
-                  WeatherSuccess(weather: final w) => TabletWeatherContent(weather: w),
-                  WeatherFailed(message: final msg) => WeatherFailedContent(msg),
+                  WeatherSuccess(weather: final w) => TabletWeatherContent(
+                    weather: w,
+                  ),
+                  WeatherFailed(message: final msg) => WeatherFailedContent(
+                    msg,
+                  ),
                   _ => Skeletonizer(
-                    enabled: true,
                     child: TabletWeatherContent(weather: WeatherEntity.fake()),
                   ),
                 },

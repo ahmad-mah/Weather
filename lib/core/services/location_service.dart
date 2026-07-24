@@ -3,7 +3,7 @@ import 'package:geolocator/geolocator.dart';
 class LocationService {
   /// Gets the user's current location, requesting permission if needed.
   Future<Position> getCurrentLocation() async {
-    bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+    final bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
       throw Exception('Location services are disabled.');
     }

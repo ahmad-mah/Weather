@@ -17,16 +17,16 @@ class AppTheme {
         filled: true,
         fillColor: scheme.surfaceContainerLow,
         hintStyle: TextStyle(color: scheme.onSurfaceVariant),
-        border: OutlineInputBorder(
+        border: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide.none,
         ),
-        enabledBorder: OutlineInputBorder(
+        enabledBorder: const OutlineInputBorder(
           borderRadius: BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide.none,
         ),
         focusedBorder: OutlineInputBorder(
-          borderRadius: BorderRadius.all(Radius.circular(16)),
+          borderRadius: const BorderRadius.all(Radius.circular(16)),
           borderSide: BorderSide(color: scheme.primary),
         ),
       ),

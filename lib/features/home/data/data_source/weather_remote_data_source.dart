@@ -7,14 +7,16 @@ abstract class WeatherRemoteDataSource {
 }
 
 class WeatherRemoteDataSourceImpl implements WeatherRemoteDataSource {
-  final ApiService apiService;
 
   WeatherRemoteDataSourceImpl(this.apiService);
+  final ApiService apiService;
 
   @override
   Future<WeatherModel> getWeather(dynamic position) async {
-    final response =
-        await apiService.get(endpoint: 'current.json', q: '$position');
+    final response = await apiService.get(
+      endpoint: 'current.json',
+      q: '$position',
+    );
 
     // WeatherAPI returns HTTP 200 with error body for invalid locations
     if (response.containsKey('error')) {
