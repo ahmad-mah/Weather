@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
+import '../../../../../core/di/service_locator.dart';
 import '../../../../../core/extensions/location_extensions.dart';
 import '../../../../../core/extensions/theme_extensions.dart';
 import '../../../../../core/helpers/styled_snackbar.dart';
+import '../../../../../core/services/internet_service.dart';
 import '../../../../../core/widgets/styled_circular_progress_indicator.dart';
 import '../../controller/location/location_cubit.dart';
 import '../../controller/weather/weather_cubit.dart';
@@ -21,8 +23,11 @@ class LocationButton extends StatelessWidget {
           showStyledSnackBar(context, state.message);
         }
         if (state is LocationSuccess) {
-          context.read<WeatherCubit>().searchWeather(state.position.formattedLocation);
-          context.read<WeatherCubit>().setPosition = state.position.formattedLocation;
+          context.read<WeatherCubit>().searchWeather(
+            state.position.formattedLocation,
+          );
+          context.read<WeatherCubit>().setPosition =
+              state.position.formattedLocation;
         }
       },
       child: BlocBuilder<LocationCubit, LocationState>(
@@ -38,7 +43,16 @@ class LocationButton extends StatelessWidget {
             ),
             child: IconButton(
               icon: const Icon(Icons.location_on_rounded),
-              onPressed: () => context.read<LocationCubit>().fetchCurrentLocation(),
+              onPressed: () async {
+                final hasInternet = await getIt<InternetService>()
+                    .hasInternet();
+                if (!context.mounted) return;
+                if (!hasInternet) {
+                  showStyledSnackBar(context, 'No internet connection');
+                  return;
+                }
+                context.read<LocationCubit>().fetchCurrentLocation();
+              },
             ),
           );
         },
