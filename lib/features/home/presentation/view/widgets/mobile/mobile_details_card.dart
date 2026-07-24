@@ -13,7 +13,7 @@ class MobileDetailsCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 20.h, horizontal: 16.w),
+      padding: EdgeInsets.symmetric(vertical: 20, horizontal: 16),
       width: double.infinity,
       decoration: BoxDecoration(
         gradient: LinearGradient(

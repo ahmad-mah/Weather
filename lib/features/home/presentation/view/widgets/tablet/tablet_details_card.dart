@@ -52,7 +52,7 @@ class _DetailsCardRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(vertical: 12.h, horizontal: 16.w),
+      padding: EdgeInsets.symmetric(vertical: 24.h, horizontal: 16.w),
       width: double.infinity,
       decoration: BoxDecoration(
         color: context.colors.onPrimary.withValues(alpha: 0.1),

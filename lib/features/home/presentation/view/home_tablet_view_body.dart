@@ -21,11 +21,11 @@ class HomeTabletViewBody extends HookWidget {
       buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
         return SafeArea(
-          child: SingleChildScrollView(
-            child: Center(
+          child: Center(
+            child: SingleChildScrollView(
               child: Padding(
                 padding: EdgeInsets.symmetric(
-                  horizontal: 0.08.sw,
+                  horizontal: 0.15.sw,
                   vertical: 16.h,
                 ),
                 child: switch (state) {

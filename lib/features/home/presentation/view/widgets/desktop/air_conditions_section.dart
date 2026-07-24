@@ -63,7 +63,7 @@ class AirConditionsSection extends StatelessWidget {
         borderRadius: BorderRadius.circular(16.0),
       ),
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 16.h, horizontal: 16.w),
+        padding: EdgeInsets.symmetric(vertical: 32.h, horizontal: 16.w),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           mainAxisSize: MainAxisSize.min,
@@ -73,7 +73,7 @@ class AirConditionsSection extends StatelessWidget {
               AppStrings.airCondition,
               style: AppStyles.textStyleBoldl20(context),
             ),
-            SizedBox(height: 12.h),
+            SizedBox(height: 32.h),
             Row(
               children: [
                 for (var i = 0; i < 4; i++)

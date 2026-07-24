@@ -27,7 +27,7 @@ class HomeDesktopViewBody extends HookWidget {
               child: Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(
-                    horizontal: 0.12.sw,
+                    horizontal: 0.18.sw,
                     vertical: 32.h,
                   ),
                   child: switch (state) {

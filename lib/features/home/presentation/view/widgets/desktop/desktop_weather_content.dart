@@ -17,14 +17,13 @@ class DesktopWeatherContent extends StatelessWidget {
       spacing: 32.w,
       children: [
         Expanded(
-          flex: 2,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const SearchTextField(),
-              Expanded(child: DesktopHeaderSection(weather: weather)),
-              SizedBox(height: 32.h),
-              Expanded(child: AirConditionsSection(weather: weather)),
+              DesktopHeaderSection(weather: weather),
+              SizedBox(height: 60.h),
+              AirConditionsSection(weather: weather),
             ],
           ),
         ),

@@ -36,7 +36,9 @@ class _CityName extends StatelessWidget {
     return Text(
       textAlign: TextAlign.center,
       weather.cityName,
-      style: AppStyles.textStyleBold55(context).copyWith(color: context.colors.onPrimary),
+      style: AppStyles.textStyleBold55(
+        context,
+      ).copyWith(color: context.colors.onPrimary),
     );
   }
 }
@@ -53,9 +55,10 @@ class _TemperatureRow extends StatelessWidget {
       children: [
         Text(
           '${weather.temperature.toInt()}°',
-          style: AppStyles.textStyleBold70(context).copyWith(color: context.colors.onPrimary),
+          style: AppStyles.textStyleBold70(
+            context,
+          ).copyWith(color: context.colors.onPrimary),
         ),
-        SizedBox(width: 16.w),
         _WeatherIcon(iconUrl: weather.weatherConditionIcon),
       ],
     );
@@ -71,7 +74,7 @@ class _WeatherIcon extends StatelessWidget {
   Widget build(BuildContext context) {
     return CachedNetworkImage(
       imageUrl: iconUrl,
-      scale: .45,
+      scale: .5,
       placeholder: (_, _) => SizedBox(
         height: 60.w,
         width: 60.w,
@@ -93,12 +96,16 @@ class _WeatherCondition extends StatelessWidget {
       children: [
         Text(
           weather.weatherCondition,
-          style: AppStyles.textStyleBold30(context).copyWith(color: context.colors.onPrimary),
+          style: AppStyles.textStyleBold30(
+            context,
+          ).copyWith(color: context.colors.onPrimary),
         ),
         SizedBox(height: 4.h),
         Text(
           '${weather.formattedDay}, ${weather.formattedTime}',
-          style: AppStyles.textStyleBoldl20(context).copyWith(color: context.colors.onPrimary.withValues(alpha: 0.54)),
+          style: AppStyles.textStyleBoldl20(
+            context,
+          ).copyWith(color: context.colors.onPrimary.withValues(alpha: 0.54)),
         ),
       ],
     );

@@ -17,13 +17,13 @@ class AirConditionItem extends StatelessWidget {
   Widget build(BuildContext context) {
     return Row(
         crossAxisAlignment: CrossAxisAlignment.center,
-        mainAxisAlignment: MainAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
         spacing: 10.w,
         children: [
           Icon(
             data.icon,
             color: context.colors.onPrimary,
-            size: 18.w,
+            size: 14.w,
           ),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -31,7 +31,7 @@ class AirConditionItem extends StatelessWidget {
             children: [
               Text(
                 data.text,
-                style: AppStyles.textStyleBold18(context).copyWith(
+                style: AppStyles.textStyleBoldl20(context).copyWith(
                   color: context.colors.onPrimary,
                 ),
               ),

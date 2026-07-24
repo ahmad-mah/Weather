@@ -7,21 +7,19 @@ import 'tablet_details_card.dart';
 import 'tablet_header_section.dart';
 
 class TabletWeatherContent extends StatelessWidget {
-  const TabletWeatherContent({
-    super.key,
-    required this.weather,
-  });
+  const TabletWeatherContent({super.key, required this.weather});
 
   final WeatherEntity weather;
 
   @override
   Widget build(BuildContext context) {
     return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
       spacing: 36.h,
       children: [
         const SearchTextField(),
         TabletHeaderSection(weather: weather),
-        SizedBox(height: 8.h),
+        SizedBox(height: 18.h),
         TabletDetailsCard(weather: weather),
       ],
     );

@@ -13,15 +13,22 @@ class TabletHeaderSection extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.center,
-      children: [
-        _CityName(weather: weather),
-        SizedBox(height: 8.h),
-        _TemperatureRow(weather: weather),
-        SizedBox(height: 8.h),
-        _WeatherCondition(weather: weather),
-      ],
+    return Padding(
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 24.h),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          _CityName(weather: weather),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _TemperatureRow(weather: weather),
+              _WeatherCondition(weather: weather),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }
@@ -33,10 +40,12 @@ class _CityName extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Text(
-      textAlign: TextAlign.center,
-      weather.cityName,
-      style: AppStyles.textStyleBold55(context).copyWith(color: context.colors.onPrimary),
+    return Expanded(
+      child: Text(
+        textAlign: TextAlign.start,
+        weather.cityName,
+        style: AppStyles.textStyleBold55(context).copyWith(color: context.colors.onPrimary),
+      ),
     );
   }
 }
@@ -55,7 +64,6 @@ class _TemperatureRow extends StatelessWidget {
           '${weather.temperature.toInt()}°',
           style: AppStyles.textStyleBold70(context).copyWith(color: context.colors.onPrimary),
         ),
-        SizedBox(width: 16.w),
         _WeatherIcon(iconUrl: weather.weatherConditionIcon),
       ],
     );
@@ -90,6 +98,7 @@ class _WeatherCondition extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           weather.weatherCondition,
