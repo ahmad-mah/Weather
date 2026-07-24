@@ -1,5 +1,21 @@
 # Weather App
 
+### Demo
+
+[Watch Demo Video](https://drive.google.com/file/d/1vh7_6z8VyUhJWO57G__K4WCyGWwFqbT8/view?usp=sharing)
+
+### Screenshots
+
+<div align="center">
+  <img src="Screenshots/1.png" width="200" alt="Mobile" />
+  <img src="Screenshots/Screenshot%20From%202026-07-24%2023-54-50.png" width="200" alt="Desktop" />
+  <img src="Screenshots/Screenshot%20From%202026-07-24%2023-55-02.png" width="200" alt="Mobile Detail" />
+  <img src="Screenshots/Screenshot%20From%202026-07-25%2000-00-05.png" width="200" alt="Error State" />
+  <br/>
+  <img src="Screenshots/Screenshot%20From%202026-07-24%2023-56-46.png" width="200" alt="Desktop Detail" />
+  <img src="Screenshots/Screenshot%20From%202026-07-25%2000-00-32.png" width="200" alt="Tablet" />
+</div>
+
 A Flutter weather app that shows current weather for any city — works offline, adapts to any screen size, and loads instantly from cache.
 
 ---
