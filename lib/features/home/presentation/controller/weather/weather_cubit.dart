@@ -29,11 +29,14 @@ class WeatherCubit extends Cubit<WeatherState> {
     _position = value;
   }
 
-  // Skip loading state — cached data is shown immediately to avoid flash
-  void init() async {
+  // Skip loading state — cached data is shown immediately to avoid flash.
+  // If no cache exists, invokes onNoCache to trigger location fallback.
+  void init(void Function() onNoCache) async {
     final cached = await getWeatherUsecase.getCachedWeather();
     if (cached != null) {
       emit(WeatherSuccess(weather: cached));
+    } else {
+      onNoCache();
     }
   }
 

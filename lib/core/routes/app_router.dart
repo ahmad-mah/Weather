@@ -32,17 +32,11 @@ abstract class AppRouter {
                   return WeatherCubit(
                     getIt<GetWeatherUsecase>(),
                     getIt<InternetService>(),
-                  )..init();
+                  )..init(() => context.read<LocationCubit>().fetchCurrentLocation());
                 },
               ),
               BlocProvider<LocationCubit>(
-                create: (context) {
-                  final cubit = LocationCubit(getIt());
-
-                  cubit.fetchCurrentLocation();
-
-                  return cubit;
-                },
+                create: (context) => LocationCubit(getIt()),
               ),
             ],
             child: const HomeView(),
