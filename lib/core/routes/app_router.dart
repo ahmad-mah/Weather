@@ -27,6 +27,7 @@ abstract class AppRouter {
           return MultiBlocProvider(
             providers: [
               BlocProvider<WeatherCubit>(
+                // Init before first frame so cached data is ready on initial build
                 create: (context) {
                   return WeatherCubit(
                     getIt<GetWeatherUsecase>(),

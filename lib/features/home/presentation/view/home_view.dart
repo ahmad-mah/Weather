@@ -18,6 +18,7 @@ class HomeView extends StatelessWidget {
     return BlocListener<LocationCubit, LocationState>(
       listener: (context, state) {
         final weather = context.read<WeatherCubit>();
+        // Only trigger location search when no cache was loaded (WeatherInitial)
         if (weather.state is! WeatherInitial) return;
 
         if (state is LocationSuccess) {

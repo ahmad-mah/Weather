@@ -10,7 +10,6 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await dotenv.load();
   await Hive.initFlutter();
-  Hive.deleteBoxFromDisk('weather_cache');
   setupServiceLocator();
   styledStatusBar();
 

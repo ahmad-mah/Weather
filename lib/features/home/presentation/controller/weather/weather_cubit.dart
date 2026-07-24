@@ -17,6 +17,7 @@ class WeatherCubit extends Cubit<WeatherState> {
   final GetWeatherUsecase getWeatherUsecase;
   final InternetService internetService;
 
+  // Separate stream for one-shot side effects (snackbars) — avoids replay on state rebuild
   final _effectController = StreamController<WeatherEffect>.broadcast();
   Stream<WeatherEffect> get effects => _effectController.stream;
 
@@ -28,6 +29,7 @@ class WeatherCubit extends Cubit<WeatherState> {
     _position = value;
   }
 
+  // Skip loading state — cached data is shown immediately to avoid flash
   void init() async {
     final cached = await getWeatherUsecase.getCachedWeather();
     if (cached != null) {
@@ -36,6 +38,7 @@ class WeatherCubit extends Cubit<WeatherState> {
   }
 
   void searchWeather(dynamic position) async {
+    // Offline: emit snackbar effect without changing state; cache fallback is in repository
     if (!await internetService.hasInternet()) {
       _effectController.add(const ShowOfflineSnackbar());
       return;

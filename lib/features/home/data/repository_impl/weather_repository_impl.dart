@@ -27,6 +27,7 @@ class WeatherRepositoryImpl implements WeatherRepository {
     return localDataSource.getWeather();
   }
 
+  // Cache-first: serve cache, then fetch fresh; fall back to stale cache on API error
   @override
   Future<Either<Failure, WeatherEntity>> getWeather(dynamic position) async {
     final cached = await localDataSource.getWeather();
@@ -41,6 +42,7 @@ class WeatherRepositoryImpl implements WeatherRepository {
       await localDataSource.saveWeather(weather);
       return Right(weather);
     } catch (e) {
+      // Stale cache is preferable to showing an error
       if (cached != null) return Right(cached);
       if (e is DioException) return Left(ServerFailure.fromDioException(e));
       if (e is ApiException) return Left(ServerFailure(e.message));

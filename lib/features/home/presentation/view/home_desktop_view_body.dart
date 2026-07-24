@@ -31,6 +31,7 @@ class HomeDesktopViewBody extends HookWidget {
     }, []);
 
     return BlocBuilder<WeatherCubit, WeatherState>(
+      buildWhen: (previous, current) => previous != current,
       builder: (context, state) {
         return CustomScrollView(
           slivers: [

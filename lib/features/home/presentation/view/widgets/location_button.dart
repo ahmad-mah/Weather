@@ -26,6 +26,7 @@ class LocationButton extends StatelessWidget {
         }
       },
       child: BlocBuilder<LocationCubit, LocationState>(
+        buildWhen: (previous, current) => previous != current,
         builder: (context, state) {
           if (state is LocationLoading) {
             return const StyledLoading();
