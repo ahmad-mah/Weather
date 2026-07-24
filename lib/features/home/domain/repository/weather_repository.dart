@@ -5,4 +5,5 @@ import '../entity/weather_entity.dart';
 
 abstract class WeatherRepository {
   Future<Either<Failure, WeatherEntity>> getWeather(dynamic position);
+  Future<WeatherEntity?> getCachedWeather();
 }

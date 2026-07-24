@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:lottie/lottie.dart';
 
-import '../../core/utils/app_lotties.dart';
-import '../../core/utils/app_router.dart';
+import '../../core/constants/app_lotties.dart';
+import '../../core/routes/app_router.dart';
 
 class SplashViewBody extends StatelessWidget {
   const SplashViewBody({super.key});

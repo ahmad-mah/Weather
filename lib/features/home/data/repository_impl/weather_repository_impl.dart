@@ -1,27 +1,49 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
 
+import '../../../../core/error/api_exception.dart';
 import '../../../../core/error/failure.dart';
+import '../../../../core/error/network_failure.dart';
 import '../../../../core/error/server_failure.dart';
+import '../../../../core/services/internet_service.dart';
 import '../../domain/entity/weather_entity.dart';
 import '../../domain/repository/weather_repository.dart';
+import '../data_source/weather_local_data_source.dart';
 import '../data_source/weather_remote_data_source.dart';
 
 class WeatherRepositoryImpl implements WeatherRepository {
   final WeatherRemoteDataSource remoteDataSource;
+  final WeatherLocalDataSource localDataSource;
+  final InternetService internetService;
 
-  WeatherRepositoryImpl(this.remoteDataSource);
+  WeatherRepositoryImpl(
+    this.remoteDataSource,
+    this.localDataSource,
+    this.internetService,
+  );
+
+  @override
+  Future<WeatherEntity?> getCachedWeather() {
+    return localDataSource.getWeather();
+  }
 
   @override
   Future<Either<Failure, WeatherEntity>> getWeather(dynamic position) async {
-    try {
-      final weatherModel = await remoteDataSource.getWeather(position);
+    final cached = await localDataSource.getWeather();
 
-      return Right(weatherModel);
+    if (!await internetService.hasInternet()) {
+      if (cached != null) return Right(cached);
+      return Left(NetworkFailure('No internet connection'));
+    }
+
+    try {
+      final weather = await remoteDataSource.getWeather(position);
+      await localDataSource.saveWeather(weather);
+      return Right(weather);
     } catch (e) {
-      if (e is DioException) {
-        return Left(ServerFailure.fromDioException(e));
-      }
+      if (cached != null) return Right(cached);
+      if (e is DioException) return Left(ServerFailure.fromDioException(e));
+      if (e is ApiException) return Left(ServerFailure(e.message));
       return Left(ServerFailure(e.toString()));
     }
   }

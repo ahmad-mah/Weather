@@ -1,4 +1,5 @@
-import '../../../../core/utils/api_service.dart';
+import '../../../../core/error/api_exception.dart';
+import '../../../../core/services/api_service.dart';
 import '../models/weather_model/weather_model.dart';
 
 abstract class WeatherRemoteDataSource {
@@ -13,7 +14,12 @@ class WeatherRemoteDataSourceImpl implements WeatherRemoteDataSource {
   @override
   Future<WeatherModel> getWeather(dynamic position) async {
     final response =
-        await apiService.get(endpoint: 'forecast.json', q: '$position&days=7');
+        await apiService.get(endpoint: 'current.json', q: '$position');
+
+    // WeatherAPI returns HTTP 200 with error body for invalid locations
+    if (response.containsKey('error')) {
+      throw ApiException(response['error']['message']);
+    }
 
     return WeatherModel.fromJson(response);
   }

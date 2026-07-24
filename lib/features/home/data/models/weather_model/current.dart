@@ -30,6 +30,10 @@ class Current {
   num? uv;
   double? gustMph;
   double? gustKph;
+  num? willItRain;
+  num? chanceOfRain;
+  num? willItSnow;
+  num? chanceOfSnow;
 
   Current({
     this.lastUpdatedEpoch,
@@ -61,6 +65,10 @@ class Current {
     this.uv,
     this.gustMph,
     this.gustKph,
+    this.willItRain,
+    this.chanceOfRain,
+    this.willItSnow,
+    this.chanceOfSnow,
   });
 
   factory Current.fromJson(Map<String, dynamic> json) => Current(
@@ -71,7 +79,8 @@ class Current {
         isDay: json['is_day'] ,
         condition: json['condition'] == null
             ? null
-            : Condition.fromJson(json['condition'] as Map<String, dynamic>),
+            : Condition.fromJson(
+                (json['condition'] as Map).cast<String, dynamic>()),
         windMph: (json['wind_mph'] as num?)?.toDouble(),
         windKph: (json['wind_kph'] as num?)?.toDouble(),
         windDegree: json['wind_degree'] ,
@@ -95,6 +104,10 @@ class Current {
         uv: json['uv'] ,
         gustMph: (json['gust_mph'] as num?)?.toDouble(),
         gustKph: (json['gust_kph'] as num?)?.toDouble(),
+        willItRain: json['will_it_rain'],
+        chanceOfRain: json['chance_of_rain'],
+        willItSnow: json['will_it_snow'],
+        chanceOfSnow: json['chance_of_snow'],
       );
 
   Map<String, dynamic> toJson() => {
@@ -127,5 +140,9 @@ class Current {
         'uv': uv,
         'gust_mph': gustMph,
         'gust_kph': gustKph,
+        'will_it_rain': willItRain,
+        'chance_of_rain': chanceOfRain,
+        'will_it_snow': willItSnow,
+        'chance_of_snow': chanceOfSnow,
       };
 }

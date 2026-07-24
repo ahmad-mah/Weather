@@ -12,4 +12,8 @@ class GetWeatherUsecase {
   Future<Either<Failure, WeatherEntity>> execute(dynamic position) {
     return weatherRepository.getWeather(position);
   }
+
+  Future<WeatherEntity?> getCachedWeather() {
+    return weatherRepository.getCachedWeather();
+  }
 }
