@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:weather/core/helpers/styled_snackbar.dart';
 
 import '../../../../core/extensions/location_extensions.dart';
 import '../../../../core/extensions/theme_extensions.dart';
@@ -25,7 +26,7 @@ class HomeView extends StatelessWidget {
           weather.searchWeather(state.position.formattedLocation);
         }
         if (state is LocationFailed) {
-          weather.searchWeather('egypt');
+          showStyledSnackBar(context, state.message);
         }
       },
       child: Scaffold(

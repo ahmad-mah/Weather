@@ -42,8 +42,6 @@ class WeatherRepositoryImpl implements WeatherRepository {
       await localDataSource.saveWeather(weather);
       return Right(weather);
     } catch (e) {
-      // Stale cache is preferable to showing an error
-      if (cached != null) return Right(cached);
       if (e is DioException) return Left(ServerFailure.fromDioException(e));
       if (e is ApiException) return Left(ServerFailure(e.message));
       return Left(ServerFailure(e.toString()));
