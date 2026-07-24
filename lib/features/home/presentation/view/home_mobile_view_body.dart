@@ -4,31 +4,18 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:skeletonizer/skeletonizer.dart';
 
-import '../../../../core/helpers/styled_snackbar.dart';
-import '../../../../core/widgets/styled_error_widget.dart';
 import '../../domain/entity/weather_entity.dart';
 import '../controller/weather/weather_cubit.dart';
-import '../controller/weather/weather_effect.dart';
+import '../hooks/use_weather_effects.dart';
 import 'widgets/mobile/mobile_weather_content.dart';
-import 'widgets/search_text_field.dart';
+import 'widgets/weather_failed_content.dart';
 
 class HomeMobileViewBody extends HookWidget {
   const HomeMobileViewBody({super.key});
 
   @override
   Widget build(BuildContext context) {
-    useEffect(() {
-      final sub = context.read<WeatherCubit>().effects.listen((effect) {
-        if (!context.mounted) return;
-        switch (effect) {
-          case ShowOfflineSnackbar():
-            showStyledSnackBar(context, 'No internet connection');
-          case ShowFailureSnackbar(message: final msg):
-            showStyledSnackBar(context, msg);
-        }
-      });
-      return sub.cancel;
-    }, []);
+    useWeatherEffects(context);
 
     return BlocBuilder<WeatherCubit, WeatherState>(
       buildWhen: (previous, current) => previous != current,
@@ -44,14 +31,7 @@ class HomeMobileViewBody extends HookWidget {
                 WeatherSuccess(weather: final w) => MobileWeatherContent(
                   weather: w,
                 ),
-                WeatherFailed(message: final msg) => Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  spacing: 1.sh * 0.2,
-                  children: [
-                    const SearchTextField(),
-                    StyledErrorWidget(message: msg),
-                  ],
-                ),
+                WeatherFailed(message: final msg) => WeatherFailedContent(msg),
                 _ => Skeletonizer(
                   enabled: true,
                   child: MobileWeatherContent(weather: WeatherEntity.fake()),
