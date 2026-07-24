@@ -24,20 +24,18 @@ abstract class AppRouter {
       GoRoute(
         path: kHome,
         builder: (BuildContext context, GoRouterState state) {
+          final locationCubit = LocationCubit(getIt());
+          final weatherCubit = WeatherCubit(
+            getIt<GetWeatherUsecase>(),
+            getIt<InternetService>(),
+          );
+
+          weatherCubit.init(locationCubit.fetchCurrentLocation);
+
           return MultiBlocProvider(
             providers: [
-              BlocProvider<WeatherCubit>(
-                // Init before first frame so cached data is ready on initial build
-                create: (context) {
-                  return WeatherCubit(
-                    getIt<GetWeatherUsecase>(),
-                    getIt<InternetService>(),
-                  )..init(() => context.read<LocationCubit>().fetchCurrentLocation());
-                },
-              ),
-              BlocProvider<LocationCubit>(
-                create: (context) => LocationCubit(getIt()),
-              ),
+              BlocProvider<LocationCubit>.value(value: locationCubit),
+              BlocProvider<WeatherCubit>.value(value: weatherCubit),
             ],
             child: const HomeView(),
           );

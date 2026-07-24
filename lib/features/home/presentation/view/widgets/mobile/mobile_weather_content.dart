@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
+import 'package:hive_ce/hive.dart';
 
 import '../../../../domain/entity/weather_entity.dart';
 import '../search_text_field.dart';
@@ -7,10 +8,7 @@ import 'mobile_details_card.dart';
 import 'mobile_header_section.dart';
 
 class MobileWeatherContent extends StatelessWidget {
-  const MobileWeatherContent({
-    super.key,
-    required this.weather,
-  });
+  const MobileWeatherContent({super.key, required this.weather});
 
   final WeatherEntity weather;
 
@@ -22,7 +20,12 @@ class MobileWeatherContent extends StatelessWidget {
         const SearchTextField(),
         MobileHeaderSection(weather: weather),
         SizedBox(height: 8.h),
-        MobileDetailsCard(weather: weather),
+        GestureDetector(
+          onTap: () {
+            Hive.deleteBoxFromDisk('weather_cache');
+          },
+          child: MobileDetailsCard(weather: weather),
+        ),
       ],
     );
   }
