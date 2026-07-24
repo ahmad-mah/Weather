@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_spinkit/flutter_spinkit.dart';
 
-import '../utils/app_colors.dart';
+import '../extensions/theme_extensions.dart';
 
 class StyledLoading extends StatelessWidget {
   const StyledLoading({
@@ -17,8 +17,8 @@ class StyledLoading extends StatelessWidget {
           return DecoratedBox(
             decoration: BoxDecoration(
               color: index.isEven
-                  ? AppColors.secondaryColor
-                  : AppColors.lightWhiteColor,
+                  ? context.colors.secondary
+                  : context.colors.onPrimary,
             ),
           );
         },
