@@ -6,10 +6,10 @@ import '../../../../../../core/constants/app_strings.dart';
 import '../../../../../../core/typography/app_styles.dart';
 import '../../../../domain/entity/air_condition_item_model.dart';
 import '../../../../domain/entity/weather_entity.dart';
-import 'air_condition_item.dart';
+import 'desktop_air_condition_item.dart';
 
-class AirConditionsSection extends StatelessWidget {
-  const AirConditionsSection({super.key, required this.weather});
+class DesktopAirConditionsSection extends StatelessWidget {
+  const DesktopAirConditionsSection({super.key, required this.weather});
 
   final WeatherEntity weather;
 
@@ -77,14 +77,14 @@ class AirConditionsSection extends StatelessWidget {
             Row(
               children: [
                 for (var i = 0; i < 4; i++)
-                  Expanded(child: AirConditionItem(data: items[i])),
+                  Expanded(child: DesktopAirConditionItem(data: items[i])),
               ],
             ),
             SizedBox(height: 8.h),
             Row(
               children: [
                 for (var i = 4; i < 8; i++)
-                  Expanded(child: AirConditionItem(data: items[i])),
+                  Expanded(child: DesktopAirConditionItem(data: items[i])),
               ],
             ),
           ],

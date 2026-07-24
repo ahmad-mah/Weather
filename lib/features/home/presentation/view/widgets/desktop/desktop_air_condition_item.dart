@@ -5,8 +5,8 @@ import '../../../../../../core/extensions/theme_extensions.dart';
 import '../../../../../../core/typography/app_styles.dart';
 import '../../../../domain/entity/air_condition_item_model.dart';
 
-class AirConditionItem extends StatelessWidget {
-  const AirConditionItem({
+class DesktopAirConditionItem extends StatelessWidget {
+  const DesktopAirConditionItem({
     super.key,
     required this.data,
   });

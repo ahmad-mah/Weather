@@ -3,7 +3,7 @@ import 'package:flutter_screenutil/flutter_screenutil.dart';
 
 import '../../../../domain/entity/weather_entity.dart';
 import '../search_text_field.dart';
-import 'air_conditions_section.dart';
+import 'desktop_air_conditions_section.dart';
 import 'desktop_header_section.dart';
 
 class DesktopWeatherContent extends StatelessWidget {
@@ -23,7 +23,7 @@ class DesktopWeatherContent extends StatelessWidget {
               const SearchTextField(),
               DesktopHeaderSection(weather: weather),
               SizedBox(height: 60.h),
-              AirConditionsSection(weather: weather),
+              DesktopAirConditionsSection(weather: weather),
             ],
           ),
         ),
