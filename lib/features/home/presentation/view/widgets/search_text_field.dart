@@ -1,100 +1,59 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_hooks/flutter_hooks.dart';
+import 'package:flutter_screenutil/flutter_screenutil.dart';
 
-import '../../../../../core/helpers/styled_snackbar.dart';
-import '../../../../../core/utils/app_colors.dart';
-import '../../../../../core/widgets/styled_circular_progress_indicator.dart';
-import '../../controller/location/location_cubit.dart';
+import '../../../../../core/extensions/theme_extensions.dart';
 import '../../controller/weather/weather_cubit.dart';
-import 'stylish_text_field.dart';
+import 'location_button.dart';
 
-class SearchTextField extends StatefulWidget {
-  const SearchTextField({
-    super.key,
-  });
+class SearchTextField extends HookWidget {
+  const SearchTextField({super.key});
 
-  @override
-  SearchTextFieldState createState() => SearchTextFieldState();
-}
-
-class SearchTextFieldState extends State<SearchTextField> {
-  bool _isTapped = false;
-  final TextEditingController _controller = TextEditingController();
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  void _handleTap() {
-    setState(() {
-      _isTapped = !_isTapped;
-    });
+  void _search(BuildContext context, String position) {
+    context.read<WeatherCubit>().searchWeather(position);
+    context.read<WeatherCubit>().setPosition = position;
   }
 
   @override
   Widget build(BuildContext context) {
-    final cubit = context.read<WeatherCubit>();
+    final colors = context.colors;
+    final controller = useTextEditingController();
+
     return Row(
       children: [
         Expanded(
-          child: StylishTextField(
-            controller: _controller,
-            isTapped: _isTapped,
-            onTap: () {
-              _handleTap();
-              if (_controller.text.isNotEmpty) {
-                cubit.getWeather(_controller.text);
-                cubit.setPosition = _controller.text;
-              }
-              _controller.clear();
-            },
+          child: TextField(
+            controller: controller,
+            decoration: InputDecoration(
+              hintText: 'Search for a city',
+              suffixIcon: InkWell(
+                onTap: () {
+                  final text = controller.text.trim();
+                  if (text.isEmpty) return;
+                  _search(context, text);
+                  controller.clear();
+                },
+                borderRadius: BorderRadius.circular(16.r),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: colors.secondaryContainer,
+                    borderRadius: BorderRadius.circular(16.r),
+                  ),
+                  child: Icon(Icons.search, color: colors.onSecondaryContainer),
+                ),
+              ),
+            ),
             onSubmitted: (value) {
-              if (_controller.text.isNotEmpty) {
-                cubit.getWeather(_controller.text);
-                cubit.setPosition = _controller.text;
-
-                _controller.clear();
-              }
+              final text = controller.text.trim();
+              if (text.isEmpty) return;
+              _search(context, text);
+              controller.clear();
             },
           ),
         ),
-        const SizedBox(width: 8),
-        BlocConsumer<LocationCubit, LocationState>(
-          listener: (context, state) {
-            if (state is LocationFailed) {
-              showStyledSnackBar(context, state.message);
-            }
-            if (state is LocationSuccess) {
-              cubit.getWeather(
-                  '${state.position.latitude},${state.position.longitude}');
-              cubit.setPosition =
-                  '${state.position.latitude},${state.position.longitude}';
-              _controller.clear();
-            }
-          },
-          builder: (context, state) {
-            if (state is LocationLoading) {
-              return const StyledLoading();
-            }
-            return Container(
-              decoration: BoxDecoration(
-                color: Colors.blue[50],
-                borderRadius: BorderRadius.circular(16),
-              ),
-              child: IconButton(
-                icon: const Icon(
-                  Icons.location_on_rounded,
-                  color: AppColors.secondaryColor,
-                ),
-                onPressed: () async {
-                  await context.read<LocationCubit>().fetchCurrentLocation();
-                },
-              ),
-            );
-          },
-        ),
+        SizedBox(width: 8.w),
+        const LocationButton(),
       ],
     );
   }
